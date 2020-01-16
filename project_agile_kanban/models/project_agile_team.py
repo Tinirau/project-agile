@@ -4,8 +4,6 @@ from odoo import models, fields
 
 
 class AgileTeam(models.Model):
-    _inherit = 'project.agile.team'
+    _inherit = "project.agile.team"
 
-    type = fields.Selection(
-        selection_add=[('kanban', 'Kanban')],
-    )
+    type = fields.Selection(selection_add=[("kanban", "Kanban")],)

@@ -4,25 +4,22 @@ from odoo import models
 
 
 class ProjectWorkflowPublisher(models.AbstractModel):
-    _inherit = 'project.workflow.publisher'
+    _inherit = "project.workflow.publisher"
 
     def update_board_no_switch(self, old, board, wkf_states, status_tree):
         super(ProjectWorkflowPublisher, self).update_board_no_switch(
             old, board, wkf_states, status_tree
         )
 
-        if board.type != 'kanban':
+        if board.type != "kanban":
             return
 
-        backlog_column_status = board.kanban_initial_column_status_ids. \
-            filtered(
-                lambda s: s.workflow_id == old
-            )
+        backlog_column_status = board.kanban_initial_column_status_ids.filtered(
+            lambda s: s.workflow_id == old
+        )
 
         if len(backlog_column_status):
-            status = status_tree.get(
-                backlog_column_status.stage_id.id, False
-            )
+            status = status_tree.get(backlog_column_status.stage_id.id, False)
 
             if status:
                 backlog_column_status.status_id = status.id

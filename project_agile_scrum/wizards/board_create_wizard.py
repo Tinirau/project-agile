@@ -4,10 +4,8 @@ from odoo import models, fields
 
 
 class BoardCreateWizard(models.TransientModel):
-    _inherit = 'project.agile.board.create.wizard'
+    _inherit = "project.agile.board.create.wizard"
 
     type = fields.Selection(
-        selection=[('scrum', 'Scrum')],
-        default='scrum',
-        required=True
+        selection=[("scrum", "Scrum")], default="scrum", required=True
     )

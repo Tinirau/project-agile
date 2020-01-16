@@ -7,21 +7,19 @@ from odoo import models, fields, api
 
 
 class Task(models.Model):
-    _inherit = 'project.task'
+    _inherit = "project.task"
 
     analytic_line_ids = fields.One2many(
-        comodel_name='project.agile.analytic.line',
-        inverse_name='task_id',
-        string='Analytic Lines'
+        comodel_name="project.agile.analytic.line",
+        inverse_name="task_id",
+        string="Analytic Lines",
     )
 
     analytic_line_count = fields.Integer(
         compute="_compute_analytic_line_count"
     )
 
-    analytic_enabled = fields.Boolean(
-        related="project_id.analytic_enabled",
-    )
+    analytic_enabled = fields.Boolean(related="project_id.analytic_enabled",)
 
     @api.multi
     def _compute_analytic_line_count(self):
@@ -29,7 +27,7 @@ class Task(models.Model):
             record.analytic_line_count = len(record.analytic_line_ids)
 
     @api.model
-    @api.returns('self', lambda value: value.id)
+    @api.returns("self", lambda value: value.id)
     def create(self, vals):
         task = super(Task, self).create(vals)
         if task.analytic_enabled:
@@ -48,36 +46,43 @@ class Task(models.Model):
         self.ensure_one()
 
         # Let's log stats as root
-        analytic_line = self.env['project.agile.analytic.line'].sudo()
+        analytic_line = self.env["project.agile.analytic.line"].sudo()
 
         if create:
-            analytic_line.create({
-                'task_id': self.id,
-                'user_id': self.user_id.id,
-                'stage_id': self.stage_id.id,
-                'start_date': fields.Datetime.to_string(datetime.now()),
-                'company_id': self.company_id.id,
-            })
-        elif 'stage_id' in vals or 'user_id' in vals:
+            analytic_line.create(
+                {
+                    "task_id": self.id,
+                    "user_id": self.user_id.id,
+                    "stage_id": self.stage_id.id,
+                    "start_date": fields.Datetime.to_string(datetime.now()),
+                    "company_id": self.company_id.id,
+                }
+            )
+        elif "stage_id" in vals or "user_id" in vals:
 
-            stage_id = vals.get('stage_id', self.stage_id.id)
-            user_id = vals.get('user_id', self.user_id.id)
+            stage_id = vals.get("stage_id", self.stage_id.id)
+            user_id = vals.get("user_id", self.user_id.id)
 
             if stage_id == self.stage_id.id and user_id == self.user_id.id:
                 return
 
-            line = analytic_line.search([
-                ('task_id', '=', self.id),
-                ('stage_id', '=', self.stage_id.id),
-                ('end_date', '=', False)
-            ], limit=1)
+            line = analytic_line.search(
+                [
+                    ("task_id", "=", self.id),
+                    ("stage_id", "=", self.stage_id.id),
+                    ("end_date", "=", False),
+                ],
+                limit=1,
+            )
 
-            line.write({'end_date': fields.Datetime.to_string(datetime.now())})
+            line.write({"end_date": fields.Datetime.to_string(datetime.now())})
 
-            analytic_line.create({
-                'task_id': self.id,
-                'user_id': user_id,
-                'stage_id': stage_id,
-                'start_date': fields.Datetime.to_string(datetime.now()),
-                'company_id': self.company_id.id,
-            })
+            analytic_line.create(
+                {
+                    "task_id": self.id,
+                    "user_id": user_id,
+                    "stage_id": stage_id,
+                    "start_date": fields.Datetime.to_string(datetime.now()),
+                    "company_id": self.company_id.id,
+                }
+            )

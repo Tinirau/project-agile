@@ -5,21 +5,18 @@ from odoo import models, fields, api
 
 
 class ProjectTaskWorklogWizard(models.TransientModel):
-    _inherit = 'project.task.worklog.wizard'
+    _inherit = "project.task.worklog.wizard"
 
     category_id = fields.Many2one(
-        comodel_name='project.timesheet.category',
+        comodel_name="project.timesheet.category",
         default=lambda self: self.env.user.default_timesheet_category_id,
-        string='Category',
+        string="Category",
         required=True,
     )
 
     billable = fields.Selection(
-        selection=[
-            ('yes', 'Yes'),
-            ('no', 'No'),
-        ],
-        default='yes',
+        selection=[("yes", "Yes"), ("no", "No"),],
+        default="yes",
         required=True,
     )
 
@@ -31,7 +28,7 @@ class ProjectTaskWorklogWizard(models.TransientModel):
     def _prepare_worklog(self):
         data = super(ProjectTaskWorklogWizard, self)._prepare_worklog()
 
-        data['category_id'] = self.category_id.id
-        data['billable'] = self.billable
+        data["category_id"] = self.category_id.id
+        data["billable"] = self.billable
 
         return data

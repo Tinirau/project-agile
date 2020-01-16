@@ -5,12 +5,12 @@ from odoo import models, fields, api
 
 
 class Project(models.Model):
-    _inherit = 'project.project'
+    _inherit = "project.project"
 
     analytic_line_ids = fields.One2many(
-        comodel_name='project.agile.analytic.line',
-        inverse_name='project_id',
-        string='Analytic Lines'
+        comodel_name="project.agile.analytic.line",
+        inverse_name="project_id",
+        string="Analytic Lines",
     )
 
     analytic_line_count = fields.Integer(

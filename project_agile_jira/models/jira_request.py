@@ -24,7 +24,7 @@ JOB_TYPE = [
     ("add_link", "Add Link"),
     ("add_worklog", "Add Worklog"),
     ("add_comment", "Add Comment"),
-    ("add_attachment", "Add Attachment")
+    ("add_attachment", "Add Attachment"),
 ]
 
 
@@ -32,9 +32,7 @@ class JiraRequest(models.Model):
     _name = "project.agile.jira.request"
 
     state = fields.Selection(
-        selection=REQUEST_STATES,
-        required=True,
-        default="confirmed"
+        selection=REQUEST_STATES, required=True, default="confirmed"
     )
 
     name = fields.Char(
@@ -42,42 +40,32 @@ class JiraRequest(models.Model):
         copy=False,
         default=lambda self: self.env["ir.sequence"].next_by_code(
             "project.agile.jira.request.job"
-        )
+        ),
     )
 
-    attempt = fields.Integer(
-        string="Import attempt",
-        default=1
-    )
+    attempt = fields.Integer(string="Import attempt", default=1)
 
     log_ids = fields.One2many(
         comodel_name="project.agile.jira.request.log",
         inverse_name="request_id",
-        string="Logs"
+        string="Logs",
     )
 
     config_id = fields.Many2one(
         comodel_name="project.agile.jira.config",
         string="Config",
-        ondelete="cascade"
+        ondelete="cascade",
     )
 
     project_id = fields.Many2one(
-        comodel_name="project.project",
-        string="Project"
+        comodel_name="project.project", string="Project"
     )
 
-    job_type = fields.Selection(
-        selection=JOB_TYPE,
-    )
+    job_type = fields.Selection(selection=JOB_TYPE,)
 
-    args = fields.Text(
-        string="args"
-    )
+    args = fields.Text(string="args")
 
-    kwargs = fields.Text(
-        string="kwargs"
-    )
+    kwargs = fields.Text(string="kwargs")
 
     @contextmanager
     def session(self):
@@ -120,7 +108,7 @@ class JiraRequest(models.Model):
             "attempt": self.attempt,
             "message": message,
             "stack_trace": stack_trace,
-            "request_id": self.id
+            "request_id": self.id,
         }
         with self.session() as new_cr:
             new = self.with_env(self.env(cr=new_cr))
@@ -142,20 +130,15 @@ class JiraRequestLog(models.Model):
     request_id = fields.Many2one(
         comodel_name="project.agile.jira.request",
         string="Request",
-        ondelete="cascade"
+        ondelete="cascade",
     )
 
     log_type = fields.Selection(
-        selection=LOG_TYPES,
-        string="Type",
-        default="error"
+        selection=LOG_TYPES, string="Type", default="error"
     )
 
-    attempt = fields.Integer(
-    )
+    attempt = fields.Integer()
 
-    message = fields.Text(
-    )
+    message = fields.Text()
 
-    stack_trace = fields.Text(
-    )
+    stack_trace = fields.Text()

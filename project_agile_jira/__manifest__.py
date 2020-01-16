@@ -5,28 +5,20 @@
     "name": "Project Agile Jira Importer",
     "summary": "Enables you to import projects and tasks from JIRA to Odoo",
     "category": "Project",
-    "version": "11.0.1.0.0",
+    "version": "12.0.1.0.0",
     "license": "LGPL-3",
     "author": "Modoolar",
     "website": "https://www.modoolar.com/",
     "images": ["static/description/banner.png"],
-    "depends": [
-        "project_agile",
-    ],
-
-    'external_dependencies': {
-        'python': ['jira', 'textile'],
-    },
-
+    "depends": ["project_agile",],
+    "external_dependencies": {"python": ["jira", "textile"],},
     "data": [
         "security/ir.model.access.csv",
-
         "data/sequences.xml",
         "data/crons.xml",
-
         "wizards/task_import_view.xml",
         "views/jira_request_view.xml",
-        "views/jira_config_view.xml"
+        "views/jira_config_view.xml",
     ],
     "application": True,
 }

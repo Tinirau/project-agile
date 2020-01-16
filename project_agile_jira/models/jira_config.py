@@ -16,27 +16,18 @@ except (ImportError, IOError) as err:
 class JiraConfig(models.Model):
     _name = "project.agile.jira.config"
 
-    name = fields.Char(
-        help="Config Name"
-    )
+    name = fields.Char(help="Config Name")
 
-    location = fields.Char(
-        required=True,
-        help="Url to jira application"
-    )
+    location = fields.Char(required=True, help="Url to jira application")
 
-    username = fields.Char(
-        help="Webservice user"
-    )
+    username = fields.Char(help="Webservice user")
 
-    password = fields.Char(
-        help="Webservice password"
-    )
+    password = fields.Char(help="Webservice password")
 
     request_ids = fields.One2many(
         comodel_name="project.agile.jira.request",
         inverse_name="config_id",
-        string="Requests"
+        string="Requests",
     )
 
     @api.multi
@@ -44,41 +35,45 @@ class JiraConfig(models.Model):
         for server in self:
             client = jira.JIRA(
                 server=server.location,
-                basic_auth=(server.username, server.password)
+                basic_auth=(server.username, server.password),
             )
 
             for simple_project in client.projects():
                 project_data = client.project(simple_project.id).raw
 
-                project_type = self.env["project.type"].search([
-                    ("name", "ilike", project_data["projectTypeKey"])
-                ], limit=1)
+                project_type = self.env["project.type"].search(
+                    [("name", "ilike", project_data["projectTypeKey"])],
+                    limit=1,
+                )
 
                 if not project_type:
                     task_types = []
                     for issue_type in project_data["issueTypes"]:
-                        task_type = self.env["project.task.type2"].search([
-                            ("description", "=", issue_type["name"])
-                        ])
+                        task_type = self.env["project.task.type2"].search(
+                            [("description", "=", issue_type["name"])]
+                        )
 
                         if not task_type:
-                            task_type = self.env["project.task.type2"].create({
-                                "description": issue_type["name"]
-                            })
+                            task_type = self.env["project.task.type2"].create(
+                                {"description": issue_type["name"]}
+                            )
                         task_types.append(task_type.id)
 
-                    project_type = self.env["project.type"].create({
-                        "name": project_data["projectTypeKey"],
-                        "task_type_ids": [(6, 0, task_types)]
-                    })
+                    project_type = self.env["project.type"].create(
+                        {
+                            "name": project_data["projectTypeKey"],
+                            "task_type_ids": [(6, 0, task_types)],
+                        }
+                    )
 
-                project_manager = self.env["res.users"].search([
-                    ("name", "ilike", project_data["lead"]["displayName"])
-                ], limit=1)
+                project_manager = self.env["res.users"].search(
+                    [("name", "ilike", project_data["lead"]["displayName"])],
+                    limit=1,
+                )
 
-                project = self.env["project.project"].search([
-                    ("key", "=", project_data["key"])
-                ], limit=1)
+                project = self.env["project.project"].search(
+                    [("key", "=", project_data["key"])], limit=1
+                )
 
                 new_data = {
                     "name": project_data["name"],

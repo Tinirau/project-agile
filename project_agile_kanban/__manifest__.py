@@ -5,22 +5,18 @@
     "name": "Project Agile Kanban",
     "summary": "Manage your projects by using agile kanban methodology",
     "category": "Project",
-    "version": "11.0.0.1.0",
+    "version": "12.0.1.0.0",
     "license": "LGPL-3",
     "author": "Modoolar",
     "website": "https://www.modoolar.com/",
     "images": ["static/description/banner.png"],
-    "depends": [
-        "project_agile",
-    ],
-
+    "depends": ["project_agile",],
     "data": [
         "security/ir.model.access.csv",
         "views/project_agile_board_view.xml",
         "data/simple_workflow.xml",
         "data/board.xml",
     ],
-
     "demo": [],
     "qweb": [],
     "application": True,

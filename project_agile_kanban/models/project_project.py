@@ -5,19 +5,18 @@ from odoo import models, fields, api
 
 
 class Project(models.Model):
-    _inherit = 'project.project'
+    _inherit = "project.project"
 
     agile_method = fields.Selection(
-        selection_add=[('kanban', 'Kanban')],
-        default='kanban',
+        selection_add=[("kanban", "Kanban")], default="kanban",
     )
 
     @api.multi
     def agile_kanban_enabled(self):
         self.ensure_one()
-        return self.agile_enabled and self.agile_method == 'kanban'
+        return self.agile_enabled and self.agile_method == "kanban"
 
     def get_analytic_types(self):
         types = super(Project, self).get_analytic_types()
-        types.append('kanban')
+        types.append("kanban")
         return types

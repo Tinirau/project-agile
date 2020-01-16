@@ -5,16 +5,16 @@ from odoo import models
 
 
 def name(value):
-    return {'name': value}
+    return {"name": value}
 
 
 class XmlWorkflowReader(models.AbstractModel):
-    _inherit = 'project.workflow.xml.reader'
+    _inherit = "project.workflow.xml.reader"
 
     def read_transition(self, element):
         data = super(XmlWorkflowReader, self).read_transition(element)
 
-        data['task_types'] = self.read_transition_task_types(element)
+        data["task_types"] = self.read_transition_task_types(element)
 
         return data
 
@@ -26,13 +26,13 @@ class XmlWorkflowReader(models.AbstractModel):
         :return: Returns the workflow transitions.
         """
         groups = []
-        for e in element.iterfind('task-types/task-type'):
+        for e in element.iterfind("task-types/task-type"):
             groups.append(self.read_transition_task_type(e))
         return groups
 
     def read_transition_task_type(self, element):
         return {
-            'name': self.read_string(element, 'name'),
+            "name": self.read_string(element, "name"),
         }
 
     def extend_rng(self, rng_etree):
@@ -44,7 +44,7 @@ class XmlWorkflowReader(models.AbstractModel):
         transition = root.xpath(
             "//rng:define[@name='transition']"
             "//rng:element[@name='transition']",
-            namespaces=self._rng_namespace_map
+            namespaces=self._rng_namespace_map,
         )[0]
 
         transition.append(self.rng_task_type_element())
@@ -55,14 +55,10 @@ class XmlWorkflowReader(models.AbstractModel):
 
         doc = E.grammar(
             E.define(
-                name('task-type'),
+                name("task-type"),
                 E.element(
-                    name('task-type'),
-                    E.attribute(
-                        name('name'),
-                        E.text()
-                    )
-                )
+                    name("task-type"), E.attribute(name("name"), E.text())
+                ),
             )
         )
         return doc[0]
@@ -72,14 +68,8 @@ class XmlWorkflowReader(models.AbstractModel):
         doc = E.grammar(
             E.optional(
                 E.element(
-                    name('task-types'),
-                    E.optional(
-                        E.oneOrMore(
-                            E.ref(
-                                name("task-type")
-                            )
-                        )
-                    )
+                    name("task-types"),
+                    E.optional(E.oneOrMore(E.ref(name("task-type")))),
                 )
             )
         )

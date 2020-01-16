@@ -5,8 +5,6 @@ from odoo import models, fields
 
 
 class AgileReport(models.AbstractModel):
-    _inherit = 'project.agile.report'
+    _inherit = "project.agile.report"
 
-    type = fields.Selection(
-        selection_add=[('scrum', 'Scrum')],
-    )
+    type = fields.Selection(selection_add=[("scrum", "Scrum")],)

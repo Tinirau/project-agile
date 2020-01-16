@@ -5,57 +5,52 @@ from odoo import models, fields, api
 
 
 class ProjectAgileBoard(models.Model):
-    _inherit = 'project.agile.board'
+    _inherit = "project.agile.board"
 
-    type = fields.Selection(
-        selection_add=[('kanban', 'Kanban')],
-    )
+    type = fields.Selection(selection_add=[("kanban", "Kanban")],)
 
     kanban_initial_column_id = fields.Many2one(
         comodel_name="project.agile.board.column",
         string="Initial Kanban Column",
         help="This column will be used for moving items from backlog"
-             " to the kanban board.",
+        " to the kanban board.",
     )
 
     kanban_initial_column_status_ids = fields.One2many(
-        comodel_name='project.agile.board.kanban.initial.column.status',
-        inverse_name='board_id',
-        string='Initial column states'
+        comodel_name="project.agile.board.kanban.initial.column.status",
+        inverse_name="board_id",
+        string="Initial column states",
     )
 
     kanban_backlog_state_ids = fields.One2many(
-        comodel_name='project.agile.board.kanban.backlog.state',
-        inverse_name='board_id',
-        string='Backlog states'
+        comodel_name="project.agile.board.kanban.backlog.state",
+        inverse_name="board_id",
+        string="Backlog states",
     )
 
 
 class InitialColumnStatus(models.Model):
-    _name = 'project.agile.board.kanban.initial.column.status'
+    _name = "project.agile.board.kanban.initial.column.status"
 
     board_id = fields.Many2one(
-        comodel_name='project.agile.board',
-        string='Board',
+        comodel_name="project.agile.board",
+        string="Board",
         required=True,
         index=True,
-        ondelete='cascade'
+        ondelete="cascade",
     )
 
     workflow_ids = fields.Many2many(
-        comodel_name='project.workflow',
-        compute="_compute_workflow_ids",
+        comodel_name="project.workflow", compute="_compute_workflow_ids",
     )
 
     workflow_id = fields.Many2one(
-        comodel_name='project.workflow',
-        required=True,
-        string='Workflow',
+        comodel_name="project.workflow", required=True, string="Workflow",
     )
 
     column_id = fields.Many2one(
         comodel_name="project.agile.board.column",
-        related="board_id.kanban_initial_column_id"
+        related="board_id.kanban_initial_column_id",
     )
 
     status_id = fields.Many2one(
@@ -73,8 +68,11 @@ class InitialColumnStatus(models.Model):
     )
 
     _sql_constraints = [
-        ("unique_board_workflow", "unique(board_id,workflow_id)",
-         "Workflow must be unique per kanban board")
+        (
+            "unique_board_workflow",
+            "unique(board_id,workflow_id)",
+            "Workflow must be unique per kanban board",
+        )
     ]
 
     @api.depends("board_id", "board_id.project_ids")
@@ -86,25 +84,22 @@ class InitialColumnStatus(models.Model):
 
 
 class BacklogStates(models.Model):
-    _name = 'project.agile.board.kanban.backlog.state'
+    _name = "project.agile.board.kanban.backlog.state"
 
     board_id = fields.Many2one(
-        comodel_name='project.agile.board',
-        string='Board',
+        comodel_name="project.agile.board",
+        string="Board",
         required=True,
         index=True,
-        ondelete='cascade'
+        ondelete="cascade",
     )
 
     workflow_ids = fields.Many2many(
-        comodel_name='project.workflow',
-        compute="_compute_workflow_ids",
+        comodel_name="project.workflow", compute="_compute_workflow_ids",
     )
 
     workflow_id = fields.Many2one(
-        comodel_name='project.workflow',
-        required=True,
-        string='Workflow',
+        comodel_name="project.workflow", required=True, string="Workflow",
     )
 
     state_id = fields.Many2one(
@@ -120,8 +115,11 @@ class BacklogStates(models.Model):
     )
 
     _sql_constraints = [
-        ("unique_board_workflow", "unique(board_id,workflow_id)",
-         "One workflow state per board is allowed!")
+        (
+            "unique_board_workflow",
+            "unique(board_id,workflow_id)",
+            "One workflow state per board is allowed!",
+        )
     ]
 
     @api.depends("board_id", "board_id.project_ids")
@@ -133,10 +131,11 @@ class BacklogStates(models.Model):
 
 
 class ProjectAgileBoardColumn(models.Model):
-    _inherit = 'project.agile.board.column'
+    _inherit = "project.agile.board.column"
 
     def _min_max_available_for_types(self):
-        types = super(ProjectAgileBoardColumn, self) \
-            ._min_max_available_for_types()
-        types.append('kanban')
+        types = super(
+            ProjectAgileBoardColumn, self
+        )._min_max_available_for_types()
+        types.append("kanban")
         return types

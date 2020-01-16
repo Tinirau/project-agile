@@ -17,15 +17,13 @@ class TaskImport(models.TransientModel):
     _name = "project.agile.jira.task.import.wizard"
 
     project_id = fields.Many2one(
-        comodel_name="project.project",
-        string="Project",
-        required=True,
+        comodel_name="project.project", string="Project", required=True,
     )
 
     issue_type_mapper_ids = fields.One2many(
         comodel_name="project.agile.jira.issue.type.mapper",
         string="Type mapper",
-        inverse_name="task_import_id"
+        inverse_name="task_import_id",
     )
 
     @api.onchange("project_id")
@@ -38,7 +36,7 @@ class TaskImport(models.TransientModel):
         )
         client = jira.JIRA(
             server=jira_config.location,
-            basic_auth=(jira_config.username, jira_config.password)
+            basic_auth=(jira_config.username, jira_config.password),
         )
 
         jira_project = client.project(self.project_id.key)
@@ -53,37 +51,47 @@ class TaskImport(models.TransientModel):
     def button_import(self):
 
         if self.project_id.task_ids:
-            raise exceptions.Warning(_(
-                "Project %s has tasks... Possible problem with task KEY"
-            ) % self.project_id.name)
+            raise exceptions.Warning(
+                _("Project %s has tasks... Possible problem with task KEY")
+                % self.project_id.name
+            )
 
         if not self.project_id.workflow_id:
-            raise exceptions.ValidationError(_(
-                "Project %s must have workflow defined!"
-            ) % self.project_id.name)
+            raise exceptions.ValidationError(
+                _("Project %s must have workflow defined!")
+                % self.project_id.name
+            )
 
         mapper = dict()
 
         for issue_type_mapper in self.issue_type_mapper_ids:
-            mapper.update({
-                issue_type_mapper.issue_type: issue_type_mapper.task_type_id.id
-            })
+            mapper.update(
+                {
+                    issue_type_mapper.issue_type: issue_type_mapper.task_type_id.id
+                }
+            )
 
         jira_config = self.env[self.env.context.get("active_model")].browse(
             self.env.context.get("active_id")
         )
 
-        jira_config.write({
-            "request_ids": [(0, 0, {
-                "project_id": self.project_id.id,
-                "kwargs": mapper,
-                "job_type": "prepare_issues_import"
-            })]
-        })
+        jira_config.write(
+            {
+                "request_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "project_id": self.project_id.id,
+                            "kwargs": mapper,
+                            "job_type": "prepare_issues_import",
+                        },
+                    )
+                ]
+            }
+        )
 
-        return {
-            "type": "ir.actions.act_window_close"
-        }
+        return {"type": "ir.actions.act_window_close"}
 
 
 class IssueTypeMapper(models.TransientModel):
@@ -91,12 +99,11 @@ class IssueTypeMapper(models.TransientModel):
 
     task_import_id = fields.Many2one(
         comodel_name="project.agile.jira.task.import.wizard",
-        string="Task Importer"
+        string="Task Importer",
     )
 
     issue_type = fields.Char()
 
     task_type_id = fields.Many2one(
-        comodel_name="project.task.type2",
-        string="Task Type"
+        comodel_name="project.task.type2", string="Task Type"
     )
